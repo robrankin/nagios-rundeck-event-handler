@@ -61,3 +61,4 @@ ToDo
 1. Abstract RunDeck Username/Password
 2. Abstract RunDeck URL
 3. Make it work with Host Checks, not just Service Checks
+4. Do smarter things with different state changes

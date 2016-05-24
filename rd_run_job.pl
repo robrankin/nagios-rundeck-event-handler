@@ -60,8 +60,7 @@ if ($state eq "CRITICAL") {
 
 ###
 ### Subs
-### Ugliness hidden below here
-
+###
 
 sub build_rundeck_body {
   my ($argString, $logLevel, $asUser, $filter) = @_;
