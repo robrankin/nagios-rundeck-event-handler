@@ -52,8 +52,6 @@ if ($state eq "CRITICAL") {
     my $rd_run_body = build_rundeck_body ( $argString, $logLevel, $asUser, $filter );
     my $rd_run_response = web_request ('run', 'POST', $rd_run_url, $rd_run_body, \%rd_run_headers );
     if ( ! $rd_run_response->is_success ) { print "RunDeck Run Request Failed\n"; exit EXIT_CRITICAL; }
-  } else {
-  exit EXIT_OK;
   }
 }
 
