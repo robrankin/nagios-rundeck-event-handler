@@ -38,7 +38,7 @@ my $coder     = JSON::XS->new->ascii->pretty->allow_nonref;
 my $useragent = LWP::UserAgent->new(
   cookie_jar    => HTTP::Cookies->new,
 );
-my $valid_service_output = '';
+my $valid_service_output = 1;
 
 
 ###
