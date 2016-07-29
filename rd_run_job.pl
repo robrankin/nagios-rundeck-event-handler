@@ -5,7 +5,7 @@ use strict;
 use LWP::UserAgent;
 use HTTP::Cookies;
 use JSON::XS;
-use Switch;
+use feature qw(switch);
 
 # nagios exit codes
 use constant EXIT_OK       => 0;
@@ -52,19 +52,20 @@ if ( $serviceOuputEnabled ) {
 
 if ($state eq "CRITICAL") {
   if ($debug) { print "State: CRITICAL\n"; }
-  if ( ($statetype eq "SOFT" && $attemptnum >= 3) || ($statetype eq "HARD") || ($valid_service_output) ) {
-    if ($debug) { print "Type: $statetype Num: $attemptnum\n"; }
-    my $rd_auth_response = web_request ('auth', 'POST', $rd_auth_url, \%rd_auth_body, \%rd_auth_headers );
-    # Whackjob RunDeck API returns HTTP 200 on successfully FAILING auth. http://rundeck.org/2.6.6/api/index.html#password-authentication
-    if ( $rd_auth_response->request()->uri() =~ m#/user/error# || $rd_auth_response->request()->uri() =~ m#/user/login# ) {
-      print "RunDeck Auth Failed\n"; exit EXIT_CRITICAL;
+  if ( ($statetype eq "SOFT" && $attemptnum >= 3) || ($statetype eq "HARD") ) {
+    if ($valid_service_output) {
+      if ($debug) { print "Type: $statetype Num: $attemptnum\n"; }
+      my $rd_auth_response = web_request ('auth', 'POST', $rd_auth_url, \%rd_auth_body, \%rd_auth_headers );
+      # Whackjob RunDeck API returns HTTP 200 on successfully FAILING auth. http://rundeck.org/2.6.6/api/index.html#password-authentication
+      if ( $rd_auth_response->request()->uri() =~ m#/user/error# || $rd_auth_response->request()->uri() =~ m#/user/login# ) {
+        print "RunDeck Auth Failed\n"; exit EXIT_CRITICAL;
+      }
+      my $rd_run_body = build_rundeck_body ( $argString, $logLevel, $asUser, $filter );
+      my $rd_run_response = web_request ('run', 'POST', $rd_run_url, $rd_run_body, \%rd_run_headers );
+      if ( ! $rd_run_response->is_success ) { print "RunDeck Run Request Failed\n"; exit EXIT_CRITICAL; }
     }
-    my $rd_run_body = build_rundeck_body ( $argString, $logLevel, $asUser, $filter );
-    my $rd_run_response = web_request ('run', 'POST', $rd_run_url, $rd_run_body, \%rd_run_headers );
-    if ( ! $rd_run_response->is_success ) { print "RunDeck Run Request Failed\n"; exit EXIT_CRITICAL; }
   }
 }
-
 
 ###
 ### Subs
@@ -85,9 +86,9 @@ sub build_rundeck_body {
 
 sub check_service_output {
 
-  switch ($serviceOuput) {
-    case  /Socket timeout/  { $valid_service_output = 1 }
-    else                       { $valid_service_output = 0 }
+  given($serviceOuput) {
+    when (/Socket timeout/)  { $valid_service_output = 0; }
+    default                 { $valid_service_output = 1; }
   }
 
   return $valid_service_output;
