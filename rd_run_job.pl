@@ -12,18 +12,19 @@ use constant EXIT_WARNING  => 1;
 use constant EXIT_CRITICAL => 2;
 use constant EXIT_UNKNOWN  => 3;
 
-my $debug      = undef;
-my $state      = $ARGV[0];
-my $statetype  = $ARGV[1];
-my $attemptnum = $ARGV[2];
-my $username   = $ARGV[3];
-my $password   = $ARGV[4];
-my $rundeck    = $ARGV[5];
-my $jobid      = $ARGV[6];
-my $filter     = $ARGV[7];
-my $logLevel   = $ARGV[8];
-my $argString  = $ARGV[9];
-my $asUser     = $ARGV[10];
+my $debug        = undef;
+my $state        = $ARGV[0];
+my $statetype    = $ARGV[1];
+my $attemptnum   = $ARGV[2];
+my $username     = $ARGV[3];
+my $password     = $ARGV[4];
+my $rundeck      = $ARGV[5];
+my $jobid        = $ARGV[6];
+my $filter       = $ARGV[7];
+my $logLevel     = $ARGV[8];
+my $serviceOuput = $ARGV[9];
+my $argString    = $ARGV[10];
+my $asUser       = $ARGV[11];
 
 my $rd_auth_url      = $rundeck . '/j_security_check';
 my %rd_auth_headers  = ( 'Content-Type' => 'application/x-ww-form-urlencoded' );
@@ -42,7 +43,7 @@ my $useragent = LWP::UserAgent->new(
 
 if ($state eq "CRITICAL") {
   if ($debug) { print "State: CRITICAL\n"; }
-  if ( ($statetype eq "SOFT" && $attemptnum >= 3) || ($statetype eq "HARD") ) {
+  if ( ($statetype eq "SOFT" && $attemptnum >= 3) || ($statetype eq "HARD") || ($serviceOuput =~ m/Socket timeout/) ) {
     if ($debug) { print "Type: $statetype Num: $attemptnum\n"; }
     my $rd_auth_response = web_request ('auth', 'POST', $rd_auth_url, \%rd_auth_body, \%rd_auth_headers );
     # Whackjob RunDeck API returns HTTP 200 on successfully FAILING auth. http://rundeck.org/2.6.6/api/index.html#password-authentication
