@@ -87,7 +87,7 @@ sub check_service_output {
 
   switch ($serviceOuput) {
     case  /Socket timeout/	{ $valid_service_output = 1 }
-    else                    { $valid_service_output = 0 }
+    else                      { $valid_service_output = 0 }
   }
 
   return $valid_service_output;
