@@ -86,7 +86,7 @@ sub build_rundeck_body {
 sub check_service_output {
 
   switch ($serviceOuput) {
-    case  /Socket timeout/	{ $valid_service_output = 1 }
+    case  /Socket timeout/  { $valid_service_output = 1 }
     else                      { $valid_service_output = 0 }
   }
 
