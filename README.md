@@ -11,7 +11,7 @@ Nagios Command Definition
 ```
 define command {
     command_name rd_run_job
-    command_line $USER1$/rd_run_job.pl "$SERVICESTATE$" "$SERVICESTATETYPE$" "$SERVICEATTEMPT$" "<rundeck username>" "<rundeck password>" "<rundeck url>" "$_SERVICEJOBID$" "$HOSTNAME$" "DEBUG"
+    command_line $USER1$/rd_run_job.pl "$SERVICESTATE$" "$SERVICESTATETYPE$" "$SERVICEATTEMPT$" "<rundeck username>" "<rundeck password>" "<rundeck url>" "$_SERVICEJOBID$" "$HOSTNAME$" "DEBUG" "1" "$SERVICEOUTPUT$"
 }
 ```
 
@@ -24,7 +24,8 @@ define command {
 * `$_SERVICEJOBID$` The RunDeck Job ID passed by the Nagios Service Check
 * `$HOSTNAME$` Nagios Macro HOSTNAME, acts as a RunDeck Filter (i.e.: `name:$HOSTNAME$`)
 * `DEBUG` RunDeck job DEBUG level.
-
+* `1` Enable/Disable checks on valid Service Output messages
+* `$SERVICEOUTPUT$` Nagios Macro providing the first line of text output from the last service check  
 
 Nagios Service Definition
 
@@ -51,7 +52,7 @@ The Event Handler will execute on either:
 Command Line Testing
 ---
 ```
-./rd_run_job.pl "CRITICAL" "HARD" "3" "nagios" "password" "http://rundeck.example.com:4440" "e1a8c9ec-379d-46ca-9e33-6096bde0a17a" "name:hostname.example.com" "DEBUG"
+./rd_run_job.pl "CRITICAL" "HARD" "3" "nagios" "password" "http://rundeck.example.com:4440" "e1a8c9ec-379d-46ca-9e33-6096bde0a17a" "name:hostname.example.com" "DEBUG" "1" "Socket Timeout"
 ```
 
 
